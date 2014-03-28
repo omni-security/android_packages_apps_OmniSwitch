@@ -511,7 +511,7 @@ public class SwitchLayout implements OnShowcaseEventListener {
             public void onItemClick(AdapterView<?> parent,
                     View view, int position, long id) {
                 String intent = mFavoriteList.get(position);
-                mRecentsManager.startIntentFromtString(intent, true);
+                mRecentsManager.startIntentFromtString(intent, true, false);
             }
         });
         mFavoriteListHorizontal.setAdapter(mFavoriteListAdapter);
@@ -541,7 +541,7 @@ public class SwitchLayout implements OnShowcaseEventListener {
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
                 PackageManager.PackageItem packageItem = PackageManager.getInstance(mContext).getPackageList().get(position);
-                mRecentsManager.startIntentFromtString(packageItem.getIntent(), true);
+                mRecentsManager.startIntentFromtString(packageItem.getIntent(), true, false);
             }});
         mAppDrawer.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -994,7 +994,9 @@ public class SwitchLayout implements OnShowcaseEventListener {
         popup.getMenu().findItem(R.id.recent_add_favorite).setEnabled(!mFavoriteList.contains(ad.getIntent().toUri(0)));
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.recent_remove_item) {
+                if (item.getItemId() == R.id.recent_float_item) {
+                    mRecentsManager.floatingTask(ad);
+                } else if (item.getItemId() == R.id.recent_remove_item) {
                     mRecentsManager.killTask(ad);
                 } else if (item.getItemId() == R.id.recent_inspect_item) {
                     mRecentsManager.startApplicationDetailsActivity(ad.getPackageName());
@@ -1039,6 +1041,8 @@ public class SwitchLayout implements OnShowcaseEventListener {
                     mRecentsManager.startApplicationDetailsActivity(packageItem.getActivityInfo().packageName);
                 } else if (item.getItemId() == R.id.recent_remove_favorite) {
                     Utils.removeFromFavorites(mContext, packageItem.getIntent(), mFavoriteList);
+                } else if (item.getItemId() == R.id.recent_float_item) {
+                    mRecentsManager.startIntentFromtString(packageItem.getIntent(), true, true);
                 } else {
                     return false;
                 }
